@@ -68,7 +68,8 @@ public class StagedMultipleSPFExecutor implements SPFExecutor, Runnable {
 
     }
 
-    // Use short as id because the id header is limited to 16 bit
+    // Restrict id to 16-bit value because the id header is limited to 16 bit
+    // (and the underlying DNS resolver enforces 0-65535 range value)
     // From RFC1035 4.1.1. Header section format :
     // 
     // ID              A 16 bit identifier assigned by the program that
@@ -76,10 +77,11 @@ public class StagedMultipleSPFExecutor implements SPFExecutor, Runnable {
     //                 the corresponding reply and can be used by the requester
     //                 to match up replies to outstanding queries.
     //
-    private static short id;
+    private static int id;
     
     private synchronized int nextId() {
-        return id++;
+        id = (id + 1) % 0x10000;
+        return id;
     }
     
     private Logger log;
