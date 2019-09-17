@@ -29,7 +29,7 @@
 
     <groupId>org.apache.james</groupId>
     <artifactId>apache-jspf-project</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2.AWL.1</version>
     <packaging>pom</packaging>
 
     <name>Apache JAMES jSPF</name>
@@ -44,21 +44,18 @@
     </modules>
 
     <scm>
-        <connection>scm:git:http://git-wip-us.apache.org/repos/asf/james-jspf.git</connection>
-        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/james-jspf.git</developerConnection>
-        <url>https://git-wip-us.apache.org/repos/asf/james-jspf.git</url>
+        <connection>scm:git:https://github.com/worldline-messaging/james-jspf</connection>
+        <developerConnection>scm:git:https://github.com/worldline-messaging/james-jspf</developerConnection>
+        <url>scm:git:https://github.com/worldline-messaging/james-jspf</url>
       <tag>HEAD</tag>
   </scm>
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://issues.apache.org/jira/browse/JSPF</url>
-    </issueManagement>
 
     <distributionManagement>
-        <site>
-            <id>jspf-website</id>
-            <url>scpexe://people.apache.org/www/james.apache.org/jspf/</url>
-        </site>
+        <repository>
+            <id>bintray-worldline-messaging-org-maven</id>
+            <name>worldline-messaging-org-maven</name>
+            <url>https://api.bintray.com/maven/worldline-messaging-org/maven/jspf/;publish=1</url>
+        </repository>
     </distributionManagement>
 
     <properties>
