@@ -108,7 +108,7 @@ public class SPFRetriever implements SPFChecker {
 	 * This is used for testing purpose. Setting this to true will skip the initial
 	 * lookups for SPF records and instead will simply check the TXT records.
 	 */
-	private static final boolean CHECK_ONLY_TXT_RECORDS = false;
+	private static final boolean CHECK_ONLY_TXT_RECORDS = true;
     
     /**
      * Return the extracted SPF-Record 

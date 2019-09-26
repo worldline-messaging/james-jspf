@@ -199,6 +199,6 @@ zonedata:
   exp-spf26-test.foo.bar:
     - TXT:  Explanation %{t}
   spf27-test.foo.bar:
-    - SPF:  v=spf1 -all exp=exp-spf26-test.foo.bar
+    - TXT:  v=spf1 -all exp=exp-spf26-test.foo.bar
     
   

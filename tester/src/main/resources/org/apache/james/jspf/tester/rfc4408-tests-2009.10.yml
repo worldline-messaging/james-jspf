@@ -73,13 +73,13 @@ zonedata:
   example.com:
     - TIMEOUT
   example.net:
-    - SPF:  v=spf1 -all exp=exp.example.net
+    - TXT:  v=spf1 -all exp=exp.example.net
   a.example.net:
-    - SPF:  v=spf1 -all exp=exp.example.net
+    - TXT:  v=spf1 -all exp=exp.example.net
   exp.example.net:
     - TXT:  '%{l}'
   a12345678901234567890123456789012345678901234567890123456789012.example.com:
-    - SPF:  v=spf1 -all
+    - TXT:  v=spf1 -all
 ---
 description: Record lookup
 tests:
@@ -102,7 +102,7 @@ tests:
     helo: mail.example.net
     host: 1.2.3.4
     mailfrom: foo@spfonly.example.net
-    result: [fail, none]
+    result: [none, none]
   spftimeout:
     description: >-
       TXT record present, but SPF lookup times out.
@@ -190,25 +190,6 @@ tests:
     host: 1.2.3.4
     mailfrom: foo@example3.com
     result: pass
-  spfoverride:
-    description: >-
-      SPF records override TXT records.  Older implementation may
-      check TXT records only.
-    spec: 4.5/5
-    helo: mail.example1.com
-    host: 1.2.3.4
-    mailfrom: foo@example4.com
-    result: [pass, fail]
-  multitxt1:
-    description: >-
-      Older implementations will give permerror/unknown because of
-      the conflicting TXT records.  However, RFC 4408 says the SPF
-      records overrides them.
-    spec: 4.5/5
-    helo: mail.example1.com
-    host: 1.2.3.4
-    mailfrom: foo@example5.com
-    result: [pass, permerror]
   multitxt2:
     description: >-
       Multiple records is a permerror, v=spf1 is case insensitive
@@ -230,7 +211,7 @@ tests:
     helo: mail.example1.com
     host: 1.2.3.4
     mailfrom: foo@example7.com
-    result: [permerror, fail]
+    result: [none, none]
   multispf2:
     description: >-
       Older implementations ignoring SPF-type records will give pass because
@@ -257,22 +238,15 @@ tests:
     result: softfail
 zonedata:
   example3.com:
-    - SPF:  v=spf10
-    - SPF:  v=spf1 mx
+    - TXT:  v=spf10
+    - TXT:  v=spf1 mx
     - MX:   [0, mail.example1.com]
   example1.com:
-    - SPF:  v=spf1
+    - TXT:  v=spf1
   example2.com:
-    - SPF:  ['v=spf1', 'mx']
+    - TXT:  ['v=spf1', 'mx']
   mail.example1.com:
     - A:    1.2.3.4
-  example4.com:
-    - SPF:  v=spf1 +all
-    - TXT:  v=spf1 -all
-  example5.com:
-    - SPF:  v=spf1 +all
-    - TXT:  v=spf1 -all
-    - TXT:  v=spf1 +all
   example6.com:
     - TXT:  v=spf1 -all
     - TXT:  V=sPf1 +all
@@ -284,7 +258,7 @@ zonedata:
     - SPF:  v=spf1 -all
     - TXT:  v=spf1 +all
   example9.com:
-    - SPF:  v=SpF1 ~all
+    - TXT:  v=SpF1 ~all
 ---
 description: Record evaluation
 tests:
@@ -410,29 +384,29 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   t1.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4 -all moo
+    - TXT: v=spf1 ip4:1.2.3.4 -all moo
   t2.example.com:
-    - SPF: v=spf1 moo.cow-far_out=man:dog/cat ip4:1.2.3.4 -all
+    - TXT: v=spf1 moo.cow-far_out=man:dog/cat ip4:1.2.3.4 -all
   t3.example.com:
-    - SPF: v=spf1 moo.cow/far_out=man:dog/cat ip4:1.2.3.4 -all
+    - TXT: v=spf1 moo.cow/far_out=man:dog/cat ip4:1.2.3.4 -all
   t4.example.com:
-    - SPF: v=spf1 moo.cow:far_out=man:dog/cat ip4:1.2.3.4 -all
+    - TXT: v=spf1 moo.cow:far_out=man:dog/cat ip4:1.2.3.4 -all
   t5.example.com:
-    - SPF: v=spf1 redirect=t5.example.com ~all
+    - TXT: v=spf1 redirect=t5.example.com ~all
   t6.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4 redirect=t2.example.com
+    - TXT: v=spf1 ip4:1.2.3.4 redirect=t2.example.com
   t7.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4
+    - TXT: v=spf1 ip4:1.2.3.4
   t8.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4 redirect:t2.example.com
+    - TXT: v=spf1 ip4:1.2.3.4 redirect:t2.example.com
   t9.example.com:
-    - SPF: v=spf1 a:foo-bar -all
+    - TXT: v=spf1 a:foo-bar -all
   t10.example.com:
-    - SPF: v=spf1 a:mail.example...com -all
+    - TXT: v=spf1 a:mail.example...com -all
   t11.example.com:
-    - SPF: v=spf1 a:a123456789012345678901234567890123456789012345678901234567890123.example.com -all
+    - TXT: v=spf1 a:a123456789012345678901234567890123456789012345678901234567890123.example.com -all
   t12.example.com:
-    - SPF: v=spf1 a:%{H}.bar -all
+    - TXT: v=spf1 a:%{H}.bar -all
 ---
 description: ALL mechanism syntax
 tests:
@@ -484,15 +458,15 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 -all.
+    - TXT: v=spf1 -all.
   e2.example.com:
-    - SPF: v=spf1 -all:foobar
+    - TXT: v=spf1 -all:foobar
   e3.example.com:
-    - SPF: v=spf1 -all/8
+    - TXT: v=spf1 -all/8
   e4.example.com:
-    - SPF: v=spf1 ?all
+    - TXT: v=spf1 ?all
   e5.example.com:
-    - SPF: v=spf1 all -all
+    - TXT: v=spf1 all -all
 ---
 description: PTR mechanism syntax
 tests:
@@ -554,9 +528,9 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 ptr/0 -all
+    - TXT: v=spf1 ptr/0 -all
   e2.example.com:
-    - SPF: v=spf1 ptr:example.com -all
+    - TXT: v=spf1 ptr:example.com -all
   4.3.2.1.in-addr.arpa:
     - PTR: e3.example.com
     - PTR: e4.example.com
@@ -564,13 +538,13 @@ zonedata:
   1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.E.B.A.B.E.F.A.C.ip6.arpa:
     - PTR: e3.example.com
   e3.example.com:
-    - SPF: v=spf1 ptr -all
+    - TXT: v=spf1 ptr -all
     - A: 1.2.3.4
     - AAAA: CAFE:BABE::1
   e4.example.com:
-    - SPF: v=spf1 ptr -all
+    - TXT: v=spf1 ptr -all
   e5.example.com:
-    - SPF: "v=spf1 ptr:"
+    - TXT: "v=spf1 ptr:"
 ---
 description: A mechanism syntax
 tests:
@@ -781,50 +755,50 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 a/0 -all
+    - TXT: v=spf1 a/0 -all
   e2.example.com:
     - A: 1.1.1.1
     - AAAA: 1234::2
-    - SPF: v=spf1 a/0 -all
+    - TXT: v=spf1 a/0 -all
   e2a.example.com:
     - AAAA: 1234::1
-    - SPF: v=spf1 a//0 -all
+    - TXT: v=spf1 a//0 -all
   e2b.example.com:
     - A: 1.1.1.1
-    - SPF: v=spf1 a//0 -all
+    - TXT: v=spf1 a//0 -all
   e3.example.com:
-    - SPF: "v=spf1 a:foo.example.com\0"
+    - TXT: "v=spf1 a:foo.example.com\0"
   e4.example.com:
-    - SPF: v=spf1 a:111.222.33.44
+    - TXT: v=spf1 a:111.222.33.44
   e5.example.com:
-    - SPF: v=spf1 a:abc.123
+    - TXT: v=spf1 a:abc.123
   e5a.example.com:
-    - SPF: v=spf1 a:museum
+    - TXT: v=spf1 a:museum
   e5b.example.com:
-    - SPF: v=spf1 a:museum.
+    - TXT: v=spf1 a:museum.
   e6.example.com:
-    - SPF: v=spf1 a//33 -all
+    - TXT: v=spf1 a//33 -all
   e6a.example.com:
-    - SPF: v=spf1 a/33 -all
+    - TXT: v=spf1 a/33 -all
   e7.example.com:
-    - SPF: v=spf1 a//129 -all
+    - TXT: v=spf1 a//129 -all
   e9.example.com:
-    - SPF: v=spf1 a:example.com:8080
+    - TXT: v=spf1 a:example.com:8080
   e10.example.com:
-    - SPF: v=spf1 a:foo.example.com/24
+    - TXT: v=spf1 a:foo.example.com/24
   foo.example.com:
     - A: 1.1.1.1
     - A: 1.2.3.5
   e11.example.com:
-    - SPF: v=spf1 a:foo:bar/baz.example.com
+    - TXT: v=spf1 a:foo:bar/baz.example.com
   foo:bar/baz.example.com:
     - A: 1.2.3.4
   e12.example.com:
-    - SPF: v=spf1 a:example.-com
+    - TXT: v=spf1 a:example.-com
   e13.example.com:
-    - SPF: "v=spf1 a:"
+    - TXT: "v=spf1 a:"
   e14.example.com:
-    - SPF: "v=spf1 a:foo.example.xn--zckzah -all"
+    - TXT: "v=spf1 a:foo.example.xn--zckzah -all"
   foo.example.xn--zckzah:
     - A: 1.2.3.4
 ---
@@ -906,33 +880,33 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   ip5.example.com:
-    - SPF: v=spf1 ip4:1.2.3.5 -all
+    - TXT: v=spf1 ip4:1.2.3.5 -all
   ip6.example.com:
-    - SPF: v=spf1 ip4:1.2.3.6 ~all
+    - TXT: v=spf1 ip4:1.2.3.6 ~all
   ip7.example.com:
-    - SPF: v=spf1 ip4:1.2.3.7 ?all
+    - TXT: v=spf1 ip4:1.2.3.7 ?all
   ip8.example.com:
     - TIMEOUT
   erehwon.example.com:
     - TXT: v=spfl am not an SPF record
   e1.example.com:
-    - SPF: v=spf1 include:ip5.example.com ~all
+    - TXT: v=spf1 include:ip5.example.com ~all
   e2.example.com:
-    - SPF: v=spf1 include:ip6.example.com all
+    - TXT: v=spf1 include:ip6.example.com all
   e3.example.com:
-    - SPF: v=spf1 include:ip7.example.com -all
+    - TXT: v=spf1 include:ip7.example.com -all
   e4.example.com:
-    - SPF: v=spf1 include:ip8.example.com -all
+    - TXT: v=spf1 include:ip8.example.com -all
   e5.example.com:
-    - SPF: v=spf1 include:e6.example.com -all
+    - TXT: v=spf1 include:e6.example.com -all
   e6.example.com:
-    - SPF: v=spf1 include +all
+    - TXT: v=spf1 include +all
   e7.example.com:
-    - SPF: v=spf1 include:erehwon.example.com -all
+    - TXT: v=spf1 include:erehwon.example.com -all
   e8.example.com:
-    - SPF: "v=spf1 include: -all"
+    - TXT: "v=spf1 include: -all"
   e9.example.com:
-    - SPF: "v=spf1 include:ip5.example.com/24 -all"
+    - TXT: "v=spf1 include:ip5.example.com/24 -all"
 ---
 description: MX mechanism syntax
 tests:
@@ -1119,54 +1093,54 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
     - MX: [0, ""]
-    - SPF: v=spf1 mx
+    - TXT: v=spf1 mx
   e1.example.com:
-    - SPF: v=spf1 mx/0 -all
+    - TXT: v=spf1 mx/0 -all
     - MX: [0, e1.example.com]
   e2.example.com:
     - A: 1.1.1.1
     - AAAA: 1234::2
     - MX: [0, e2.example.com]
-    - SPF: v=spf1 mx/0 -all
+    - TXT: v=spf1 mx/0 -all
   e2a.example.com:
     - AAAA: 1234::1
     - MX: [0, e2a.example.com]
-    - SPF: v=spf1 mx//0 -all
+    - TXT: v=spf1 mx//0 -all
   e2b.example.com:
     - A: 1.1.1.1
     - MX: [0, e2b.example.com]
-    - SPF: v=spf1 mx//0 -all
+    - TXT: v=spf1 mx//0 -all
   e3.example.com:
-    - SPF: "v=spf1 mx:foo.example.com\0"
+    - TXT: "v=spf1 mx:foo.example.com\0"
   e4.example.com:
-    - SPF: v=spf1 mx
+    - TXT: v=spf1 mx
     - A: 1.2.3.4
   e5.example.com:
-    - SPF: v=spf1 mx:abc.123
+    - TXT: v=spf1 mx:abc.123
   e6.example.com:
-    - SPF: v=spf1 mx//33 -all
+    - TXT: v=spf1 mx//33 -all
   e6a.example.com:
-    - SPF: v=spf1 mx/33 -all
+    - TXT: v=spf1 mx/33 -all
   e7.example.com:
-    - SPF: v=spf1 mx//129 -all
+    - TXT: v=spf1 mx//129 -all
   e9.example.com:
-    - SPF: v=spf1 mx:example.com:8080
+    - TXT: v=spf1 mx:example.com:8080
   e10.example.com:
-    - SPF: v=spf1 mx:foo.example.com/24
+    - TXT: v=spf1 mx:foo.example.com/24
   foo.example.com:
     - MX: [0, foo1.example.com]
   foo1.example.com:
     - A: 1.1.1.1
     - A: 1.2.3.5
   e11.example.com:
-    - SPF: v=spf1 mx:foo:bar/baz.example.com
+    - TXT: v=spf1 mx:foo:bar/baz.example.com
   foo:bar/baz.example.com:
     - MX: [0, "foo:bar/baz.example.com"]
     - A: 1.2.3.4
   e12.example.com:
-    - SPF: v=spf1 mx:example.-com
+    - TXT: v=spf1 mx:example.-com
   e13.example.com:
-    - SPF: "v=spf1 mx: -all"
+    - TXT: "v=spf1 mx: -all"
 ---
 description: EXISTS mechanism syntax
 tests:
@@ -1198,11 +1172,11 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: "v=spf1 exists:"
+    - TXT: "v=spf1 exists:"
   e2.example.com:
-    - SPF: "v=spf1 exists"
+    - TXT: "v=spf1 exists"
   e3.example.com:
-    - SPF: "v=spf1 exists:mail.example.com/24"
+    - TXT: "v=spf1 exists:mail.example.com/24"
 ---
 description: IP4 mechanism syntax
 tests:
@@ -1293,23 +1267,23 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 ip4:1.1.1.1/0 -all
+    - TXT: v=spf1 ip4:1.1.1.1/0 -all
   e2.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4/32 -all
+    - TXT: v=spf1 ip4:1.2.3.4/32 -all
   e3.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4/33 -all
+    - TXT: v=spf1 ip4:1.2.3.4/33 -all
   e4.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4/032 -all
+    - TXT: v=spf1 ip4:1.2.3.4/032 -all
   e5.example.com:
-    - SPF: v=spf1 ip4
+    - TXT: v=spf1 ip4
   e6.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4//32
+    - TXT: v=spf1 ip4:1.2.3.4//32
   e7.example.com:
-    - SPF: v=spf1 -ip4:1.2.3.4 ip6:::FFFF:1.2.3.4
+    - TXT: v=spf1 -ip4:1.2.3.4 ip6:::FFFF:1.2.3.4
   e8.example.com:
-    - SPF: v=spf1 ip4:1.2.3.4:8080
+    - TXT: v=spf1 ip4:1.2.3.4:8080
   e9.example.com:
-    - SPF: v=spf1 ip4:1.2.3
+    - TXT: v=spf1 ip4:1.2.3
 ---
 description: IP6 mechanism syntax
 comment: >-
@@ -1411,17 +1385,17 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 -all ip6
+    - TXT: v=spf1 -all ip6
   e2.example.com:
-    - SPF: v=spf1 ip6:::1.1.1.1/0
+    - TXT: v=spf1 ip6:::1.1.1.1/0
   e3.example.com:
-    - SPF: v=spf1 ip6:::1.1.1.1/129
+    - TXT: v=spf1 ip6:::1.1.1.1/129
   e4.example.com:
-    - SPF: v=spf1 ip6:::1.1.1.1//33
+    - TXT: v=spf1 ip6:::1.1.1.1//33
   e5.example.com:
-    - SPF: v=spf1 ip6:CAFE:BABE:8000::/33
+    - TXT: v=spf1 ip6:CAFE:BABE:8000::/33
   e6.example.com:
-    - SPF: v=spf1 ip6::CAFE::BABE
+    - TXT: v=spf1 ip6::CAFE::BABE
 ---
 description: Semantics of exp and other modifiers
 comment: >-
@@ -1677,13 +1651,13 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 exp=exp1.example.com redirect=e2.example.com
+    - TXT: v=spf1 exp=exp1.example.com redirect=e2.example.com
   e2.example.com:
-    - SPF: v=spf1 -all
+    - TXT: v=spf1 -all
   e3.example.com:
-    - SPF: v=spf1 exp=exp1.example.com redirect=e4.example.com
+    - TXT: v=spf1 exp=exp1.example.com redirect=e4.example.com
   e4.example.com:
-    - SPF: v=spf1 -all exp=exp2.example.com
+    - TXT: v=spf1 -all exp=exp2.example.com
   exp1.example.com:
     - TXT: No-see-um
   exp2.example.com:
@@ -1693,48 +1667,48 @@ zonedata:
   exp4.example.com:
     - TXT: "%{l} in implementation"
   e5.example.com:
-    - SPF: v=spf1 1up=foo
+    - TXT: v=spf1 1up=foo
   e6.example.com:
-    - SPF: v=spf1 =all
+    - TXT: v=spf1 =all
   e7.example.com:
-    - SPF: v=spf1 include:e3.example.com -all exp=exp3.example.com
+    - TXT: v=spf1 include:e3.example.com -all exp=exp3.example.com
   e8.example.com:
-    - SPF: v=spf1 -all exp=exp4.example.com
+    - TXT: v=spf1 -all exp=exp4.example.com
   e9.example.com:
-    - SPF: v=spf1 -all foo=%abc
+    - TXT: v=spf1 -all foo=%abc
   e10.example.com:
-    - SPF: v=spf1 redirect=erehwon.example.com
+    - TXT: v=spf1 redirect=erehwon.example.com
   e11.example.com:
-    - SPF: v=spf1 -all exp=e11msg.example.com
+    - TXT: v=spf1 -all exp=e11msg.example.com
   e11msg.example.com:
     - TXT: Answer a fool according to his folly.
     - TXT: Do not answer a fool according to his folly.
   e12.example.com:
-    - SPF: v=spf1 exp= -all
+    - TXT: v=spf1 exp= -all
   e13.example.com:
-    - SPF: v=spf1 exp=e13msg.example.com -all
+    - TXT: v=spf1 exp=e13msg.example.com -all
   e13msg.example.com:
     - TXT: The %{x}-files.
   e14.example.com:
-    - SPF: v=spf1 exp=e13msg.example.com -all exp=e11msg.example.com
+    - TXT: v=spf1 exp=e13msg.example.com -all exp=e11msg.example.com
   e15.example.com:
-    - SPF: v=spf1 redirect=e12.example.com -all redirect=e12.example.com
+    - TXT: v=spf1 redirect=e12.example.com -all redirect=e12.example.com
   e16.example.com:
-    - SPF: v=spf1 exp=-all
+    - TXT: v=spf1 exp=-all
   e17.example.com:
-    - SPF: v=spf1 redirect=-all ?all
+    - TXT: v=spf1 redirect=-all ?all
   e18.example.com:
-    - SPF: v=spf1 ?all redirect=
+    - TXT: v=spf1 ?all redirect=
   e19.example.com:
-    - SPF: v=spf1 default=pass
+    - TXT: v=spf1 default=pass
   e20.example.com:
-    - SPF: "v=spf1 default=+"
+    - TXT: "v=spf1 default=+"
   e21.example.com:
-    - SPF: v=spf1 exp=e21msg.example.com -all
+    - TXT: v=spf1 exp=e21msg.example.com -all
   e21msg.example.com:
     - TIMEOUT
   e22.example.com:
-    - SPF: v=spf1 exp=mail.example.com -all
+    - TXT: v=spf1 exp=mail.example.com -all
 ---
 description: Macro expansion rules
 tests:
@@ -1957,44 +1931,44 @@ tests:
     result: pass
 zonedata:
   example.com.d.spf.example.com:
-    - SPF: v=spf1 redirect=a.spf.example.com
+    - TXT: v=spf1 redirect=a.spf.example.com
   a.spf.example.com:
-    - SPF: v=spf1 include:o.spf.example.com. ~all
+    - TXT: v=spf1 include:o.spf.example.com. ~all
   o.spf.example.com:
-    - SPF: v=spf1 ip4:192.168.218.40
+    - TXT: v=spf1 ip4:192.168.218.40
   msgbas2x.cos.example.com:
     - A: 192.168.218.40
   example.com:
     - A: 192.168.90.76
-    - SPF: v=spf1 redirect=%{d}.d.spf.example.com.
+    - TXT: v=spf1 redirect=%{d}.d.spf.example.com.
   exp.example.com:
-    - SPF: v=spf1 exp=msg.example.com. -all
+    - TXT: v=spf1 exp=msg.example.com. -all
   msg.example.com:
     - TXT: This is a test.
   e1.example.com:
-    - SPF: v=spf1 -exists:%(ir).sbl.example.com ?all
+    - TXT: v=spf1 -exists:%(ir).sbl.example.com ?all
   e1a.example.com:
-    - SPF: "v=spf1 a:macro%%percent%_%_space%-url-space.example.com -all"
+    - TXT: "v=spf1 a:macro%%percent%_%_space%-url-space.example.com -all"
   "macro%percent  space%20url-space.example.com":
     - A: 1.2.3.4
   e2.example.com:
-    - SPF: v=spf1 -all exp=%{r}.example.com
+    - TXT: v=spf1 -all exp=%{r}.example.com
   e3.example.com:
-    - SPF: v=spf1 -all exp=%{ir}.example.com
+    - TXT: v=spf1 -all exp=%{ir}.example.com
   40.218.168.192.example.com:
     - TXT: Connections from %{c} not authorized.
   somewhat.long.exp.example.com:
-    - SPF: v=spf1 -all exp=foobar.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.example.com
+    - TXT: v=spf1 -all exp=foobar.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.%{o}.example.com
   somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.somewhat.long.exp.example.com.example.com:
     - TXT: Congratulations!  That was tricky.
   e4.example.com:
-    - SPF: v=spf1 -all exp=e4msg.example.com
+    - TXT: v=spf1 -all exp=e4msg.example.com
   e4msg.example.com:
     - TXT: "%{c} is queried as %{ir}.%{v}.arpa"
   e5.example.com:
-    - SPF: v=spf1 a:%{a}.example.com -all
+    - TXT: v=spf1 a:%{a}.example.com -all
   e6.example.com:
-    - SPF: v=spf1 -all exp=e6msg.example.com
+    - TXT: v=spf1 -all exp=e6msg.example.com
   e6msg.example.com:
     - TXT: "connect from %{p}"
   mx.example.com:
@@ -2020,23 +1994,23 @@ zonedata:
   mx.example.com.ok.example.com:
     - A: 127.0.0.2
   e7.example.com:
-    - SPF: v=spf1 exists:%{p}.should.example.com ~exists:%{p}.ok.example.com
+    - TXT: v=spf1 exists:%{p}.should.example.com ~exists:%{p}.ok.example.com
   e8.example.com:
-    - SPF: v=spf1 -all exp=msg8.%{D2}
+    - TXT: v=spf1 -all exp=msg8.%{D2}
   msg8.example.com:
     - TXT: "http://example.com/why.html?l=%{L}"
   e9.example.com:
-    - SPF: v=spf1 a:%{H} -all
+    - TXT: v=spf1 a:%{H} -all
   e10.example.com:
-    - SPF: v=spf1 -include:_spfh.%{d2} ip4:1.2.3.0/24 -all
+    - TXT: v=spf1 -include:_spfh.%{d2} ip4:1.2.3.0/24 -all
   _spfh.example.com:
-    - SPF: v=spf1 -a:%{h} +all
+    - TXT: v=spf1 -a:%{h} +all
   e11.example.com:
-    - SPF: v=spf1 exists:%{i}.%{l2r-}.user.%{d2}
+    - TXT: v=spf1 exists:%{i}.%{l2r-}.user.%{d2}
   1.2.3.4.gladstone.philip.user.example.com:
     - A: 127.0.0.2
   e12.example.com:
-    - SPF: v=spf1 exists:%{l2r+-}.user.%{d2}
+    - TXT: v=spf1 exists:%{l2r+-}.user.%{d2}
   bar.foo.user.example.com:
     - A: 127.0.0.2
 ---
@@ -2154,13 +2128,13 @@ zonedata:
   mail.example.com:
     - A: 1.2.3.4
   e1.example.com:
-    - SPF: v=spf1 ip4:1.1.1.1 redirect=e1.example.com
+    - TXT: v=spf1 ip4:1.1.1.1 redirect=e1.example.com
   e2.example.com:
-    - SPF: v=spf1 include:e3.example.com
+    - TXT: v=spf1 include:e3.example.com
   e3.example.com:
-    - SPF: v=spf1 include:e2.example.com
+    - TXT: v=spf1 include:e2.example.com
   e4.example.com:
-    - SPF: v=spf1 mx
+    - TXT: v=spf1 mx
     - MX: [0, mail.example.com]
     - MX: [1, mail.example.com]
     - MX: [2, mail.example.com]
@@ -2174,7 +2148,7 @@ zonedata:
     - MX: [10, e4.example.com]
     - A: 1.2.3.5
   e5.example.com:
-    - SPF: v=spf1 ptr
+    - TXT: v=spf1 ptr
     - A: 1.2.3.5
   5.3.2.1.in-addr.arpa:
     - PTR: e1.example.com.
@@ -2189,17 +2163,17 @@ zonedata:
     - PTR: e10.example.com.
     - PTR: e5.example.com.
   e6.example.com:
-    - SPF: v=spf1 a mx a mx a mx a mx a ptr ip4:1.2.3.4 -all
+    - TXT: v=spf1 a mx a mx a mx a mx a ptr ip4:1.2.3.4 -all
   e7.example.com:
-    - SPF: v=spf1 a mx a mx a mx a mx a ptr a ip4:1.2.3.4 -all
+    - TXT: v=spf1 a mx a mx a mx a mx a ptr a ip4:1.2.3.4 -all
   e8.example.com:
-    - SPF: v=spf1 a include:inc.example.com ip4:1.2.3.4 mx -all
+    - TXT: v=spf1 a include:inc.example.com ip4:1.2.3.4 mx -all
   inc.example.com:
-    - SPF: v=spf1 a a a a a a a a
+    - TXT: v=spf1 a a a a a a a a
   e9.example.com:
-    - SPF: v=spf1 a include:inc.example.com a ip4:1.2.3.4 -all
+    - TXT: v=spf1 a include:inc.example.com a ip4:1.2.3.4 -all
   e10.example.com:
-    - SPF: v=spf1 a -all
+    - TXT: v=spf1 a -all
     - A: 1.2.3.1
     - A: 1.2.3.2
     - A: 1.2.3.3
