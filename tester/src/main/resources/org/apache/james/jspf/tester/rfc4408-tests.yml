@@ -69,6 +69,15 @@ tests:
     host: 1.2.3.5
     mailfrom: "foo@[1.2.3.5]"
     result: none
+  almost-spf:
+    description: >-
+      A record that does not start with the version (without leading space)
+      is not a SPF record.
+    spec: 4.5/6
+    helo: almost.example.com
+    host: 1.2.3.4
+    mailfrom: foo@almost.example.com
+    result: none
 zonedata:
   example.com:
     - TIMEOUT
@@ -80,6 +89,8 @@ zonedata:
     - TXT:  '%{l}'
   a12345678901234567890123456789012345678901234567890123456789012.example.com:
     - TXT:  v=spf1 -all
+  almost.example.net:
+    - TXT: " v=spf1 +all"
 ---
 description: Record lookup
 tests:
@@ -201,6 +212,15 @@ tests:
     host: 1.2.3.4
     mailfrom: foo@example6.com
     result: [permerror, none]
+  multitxt3:
+    description: >-
+      A record that does not start with the version (without leading space)
+      is not a SPF record and cannot be considered as a multiple record case.
+    spec: 4.5/6
+    helo: mail.example10.com
+    host: 1.2.3.4
+    mailfrom: foo@example10.com
+    result: pass
   multispf1:
     description: >-
       Multiple records is a permerror, even when they are identical.
@@ -245,6 +265,9 @@ zonedata:
     - TXT:  v=spf1 -all
   example9.com:
     - TXT:  v=SpF1 ~all
+  example10.com:
+    - TXT: "v=spf1 +all"
+    - TXT: " v=spf1 -all"
 ---
 description: Record evaluation
 tests:
