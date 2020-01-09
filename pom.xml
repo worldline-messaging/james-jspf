@@ -29,7 +29,7 @@
 
     <groupId>org.apache.james</groupId>
     <artifactId>apache-jspf-project</artifactId>
-    <version>1.0.2.AWL.3</version>
+    <version>1.0.2.AWL.4</version>
     <packaging>pom</packaging>
 
     <name>Apache JAMES jSPF</name>

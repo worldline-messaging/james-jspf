@@ -24,17 +24,7 @@ import org.apache.james.jspf.core.DNSService;
 import org.apache.james.jspf.core.IPAddr;
 import org.apache.james.jspf.core.Logger;
 import org.apache.james.jspf.core.exceptions.TimeoutException;
-import org.xbill.DNS.AAAARecord;
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.MXRecord;
-import org.xbill.DNS.PTRRecord;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.SPFRecord;
-import org.xbill.DNS.TXTRecord;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
+import org.xbill.DNS.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -148,7 +138,11 @@ public class DNSServiceXBillImpl implements DNSService {
 
             log.debug("Start "+recordTypeDescription+"-Record lookup for : " + request.getHostname());
 
-            Lookup query = new Lookup(request.getHostname(), dnsJavaType);
+            // Make sure to use an absolute name (ending with '.') otherwise the
+            // resolver may also try by suffixing with system (resolv.conf) DNS
+            // search domains if nothing is found.
+            Name name = Name.fromString(request.getHostname(), Name.root);
+            Lookup query = new Lookup(name, dnsJavaType);
             query.setResolver(resolver);
 
             Record[] rr = query.run();
